@@ -16,6 +16,8 @@
         Kellan Liu, Bandar Qadan, Sonia Sunil, Jinmo Huang
     </h3>
     <svg id="graph" height="800" width="1000" style="margin:20px"></svg>
+    <svg id="colorLegend" height="100" width="800" style="background: #fff; margin-top:30px">
+    </svg>
 
     <script>
         const svg = d3.select("#graph");
@@ -24,19 +26,113 @@
         const margin = { top: 20, right: 20, bottom: 20, left: 20 };
         const mapWidth = width - margin.left - margin.right;
         const mapHeight = height - margin.top - margin.bottom;
+
         const requestData = async () => {
-            const airbnbListing = await d3.csv('./dataset/AB_NYC_2019.csv');
+            const airbnb = await d3.csv('./dataset/AB_NYC_2019.csv');
+            const mapNYC = await d3.json('./dataset/new-york-city-boroughs.geojson')
+            console.log(mapNYC);
+            const zipCode = await d3.json('./dataset/zip_code_040114.geojson');
+            console.log(zipCode);
 
-            const crimeRate = await d3.csv('./dataset/venue_crime.csv');
-            console.log(crimeRate);
 
-            airbnbListing.forEach(data => {
+            let airbnbListing = []
+            airbnb.forEach((data, i) => {
                 data.latitude = +data.latitude;
                 data.longitude = +data.longitude;
                 data.price = +data.price;
+                if (data.price <= 1000) {
+                    if (data.price !== 0)
+                        airbnbListing.push(data)
+                }
+            });
 
-            })
-            console.log(airbnbListing);
+
+            const priceExtent = d3.map(airbnbListing, d => d.price);
+            const colorScale = d3.scaleQuantile()
+                .domain(priceExtent)
+                .range(["#590D22", "#800F2F", "#A4133C", "#C9184A", "#FF4D6D"].reverse());
+
+            let projection = d3.geoMercator().fitSize([mapWidth, mapHeight], mapNYC);
+            let path = d3.geoPath().projection(projection);
+
+
+            const geoMap = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            geoMap.selectAll('path.zipcode')
+                .data(zipCode.features)
+                .join('path')
+                .attr('class', 'zipcode')
+                .attr('d', path)
+                .attr('fill', '#ccc')
+                .attr('stroke', 'gray');
+
+
+            airbnbListing.forEach(d => {
+                d.Position = projection([d.longitude, d.latitude]);
+            });
+
+            geoMap.selectAll("circle")
+                .data(airbnbListing)
+                .join("circle")
+                .attr("r", 1)
+                .attr("fill", d => colorScale(d['price']))
+                .attr("opacity", 0.4)
+                .attr("cx", d => d.Position[0])
+                .attr("cy", d => d.Position[1]);
+
+            drawLegend("#colorLegend", colorScale);
+
+            function drawLegend(legendSelector, legendColorScale) {
+                //  Credit Prof. Rz 
+                const offsets = {
+                    width: 40,
+                    top: 2,
+                    bottom: 24
+                };
+                const stepSize = 4;
+                const minMaxExtendPercent = 0;
+
+                const legend = d3.select(legendSelector);
+                const legendHeight = legend.attr("height");
+                const legendBarWidth = legend.attr("width") - (offsets.width * 2);
+                const legendMinMax = d3.extent(legendColorScale.domain());
+                console.log("legendColorScale", legendColorScale.domain())
+                const minMaxExtension = (legendMinMax[1] - legendMinMax[0]) * minMaxExtendPercent;
+                const barHeight = legendHeight - offsets.top - offsets.bottom;
+
+                let barScale = d3.scaleLinear().domain([legendMinMax[0] - minMaxExtension,
+                legendMinMax[1] + minMaxExtension])
+                    .range([0, legendBarWidth]);
+                let barAxis = d3.axisBottom(barScale);
+
+                let bar = legend.append("g")
+                    .attr("class", "legend colorbar")
+                    .attr("transform", `translate(${offsets.width},${offsets.top})`);
+
+
+                let thresholds = [];
+                thresholds = legendColorScale.quantiles()
+
+                const barThresholds = [legendMinMax[0], ...thresholds, legendMinMax[1]];
+                barAxis.tickValues(barThresholds);
+                for (let i = 0; i < barThresholds.length - 1; i++) {
+                    let dataStart = barThresholds[i];
+                    let dataEnd = barThresholds[i + 1];
+                    let pixelStart = barAxis.scale()(dataStart);
+                    let pixelEnd = barAxis.scale()(dataEnd);
+
+                    bar.append("rect")
+                        .attr("x", pixelStart)
+                        .attr("y", 0)
+                        .attr("width", pixelEnd - pixelStart)
+                        .attr("height", barHeight)
+                        .style("fill", legendColorScale((dataStart + dataEnd) / 2.0));
+                }
+                legend.append("g")
+                    .attr("class", "legend axis")
+                    .attr("transform", `translate(${offsets.width},${offsets.top + barHeight + 5})`)
+                    .call(barAxis);
+            }
         }
 
         requestData();
