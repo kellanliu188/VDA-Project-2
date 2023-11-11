@@ -1,0 +1,341 @@
+zipcode,Top Venue,All Venues Counts,crime_counts,safety_label
+11559,restaurant,51.0,,
+11516,tourist_attraction,20.0,,
+11581,park,15.0,,
+11422,restaurant,49.0,15.0,Moderate
+11580,park,6.0,,
+11411,restaurant,47.0,16.0,Moderate
+11429,restaurant,42.0,10.0,Moderate
+11428,restaurant,61.0,14.0,Moderate
+11001,restaurant,2.0,2.0,Safe
+11426,restaurant,8.0,6.0,Moderate
+11427,restaurant,42.0,14.0,Moderate
+11362,restaurant,49.0,11.0,Moderate
+11020,restaurant,8.0,,
+11021,restaurant,83.0,,
+11363,restaurant,39.0,2.0,Safe
+11023,park,26.0,,
+11096,restaurant,29.0,,
+11413,restaurant,63.0,27.0,Unsafe
+11024,park,18.0,,
+11412,restaurant,76.0,35.0,Unsafe
+11364,restaurant,53.0,10.0,Moderate
+11691,restaurant,96.0,86.0,extremely unsafe
+11423,restaurant,76.0,22.0,Unsafe
+11361,restaurant,130.0,13.0,Moderate
+11434,restaurant,150.0,75.0,extremely unsafe
+11430,restaurant,86.0,1.0,Safe
+11365,restaurant,71.0,21.0,Unsafe
+11360,restaurant,30.0,5.0,Moderate
+11432,restaurant,255.0,48.0,extremely unsafe
+11366,restaurant,72.0,3.0,Moderate
+11433,restaurant,71.0,20.0,Unsafe
+11358,restaurant,168.0,17.0,Moderate
+10464,restaurant,49.0,1.0,Safe
+11436,restaurant,35.0,17.0,Moderate
+11357,restaurant,92.0,17.0,Moderate
+11435,restaurant,173.0,34.0,Unsafe
+11451,restaurant,1.0,1.0,Safe
+11420,restaurant,101.0,29.0,Unsafe
+10465,restaurant,84.0,24.0,Unsafe
+11367,restaurant,90.0,29.0,Unsafe
+11355,restaurant,263.0,33.0,Unsafe
+11354,restaurant,568.0,41.0,Unsafe
+11419,restaurant,166.0,26.0,Unsafe
+11418,restaurant,123.0,19.0,Moderate
+11693,park,20.0,13.0,Moderate
+11415,restaurant,54.0,11.0,Moderate
+11414,restaurant,57.0,17.0,Moderate
+11424,restaurant,1.0,,
+11356,restaurant,80.0,20.0,Unsafe
+10461,restaurant,160.0,43.0,Unsafe
+11417,restaurant,93.0,28.0,Unsafe
+11375,restaurant,264.0,19.0,Moderate
+11416,restaurant,78.0,6.0,Moderate
+11368,restaurant,350.0,64.0,extremely unsafe
+10473,restaurant,85.0,79.0,extremely unsafe
+11421,restaurant,107.0,19.0,Moderate
+10462,restaurant,188.0,48.0,extremely unsafe
+10472,restaurant,188.0,43.0,Unsafe
+11385,restaurant,342.0,73.0,extremely unsafe
+11374,restaurant,119.0,10.0,Moderate
+11208,market,275.0,148.0,extremely unsafe
+11369,restaurant,91.0,37.0,Unsafe
+11379,restaurant,71.0,10.0,Moderate
+11371,restaurant,28.0,,
+10460,market,162.0,78.0,extremely unsafe
+11373,restaurant,350.0,66.0,extremely unsafe
+11239,restaurant,20.0,16.0,Moderate
+11372,restaurant,330.0,49.0,extremely unsafe
+10474,market,123.0,48.0,extremely unsafe
+11207,restaurant,288.0,159.0,extremely unsafe
+11370,restaurant,64.0,10.0,Moderate
+10458,park,55.0,80.0,extremely unsafe
+11236,restaurant,185.0,75.0,extremely unsafe
+11378,restaurant,144.0,12.0,Moderate
+10459,restaurant,157.0,51.0,extremely unsafe
+10457,restaurant,194.0,87.0,extremely unsafe
+11377,restaurant,309.0,36.0,Unsafe
+10455,restaurant,184.0,73.0,extremely unsafe
+10456,restaurant,229.0,94.0,extremely unsafe
+11212,restaurant,231.0,144.0,extremely unsafe
+11105,restaurant,157.0,16.0,Moderate
+11234,restaurant,220.0,73.0,extremely unsafe
+11237,restaurant,323.0,46.0,Unsafe
+11103,restaurant,265.0,34.0,Unsafe
+10454,restaurant,160.0,53.0,extremely unsafe
+10453,restaurant,112.0,95.0,extremely unsafe
+11233,restaurant,200.0,121.0,extremely unsafe
+11221,market,242.0,91.0,extremely unsafe
+10451,restaurant,192.0,102.0,extremely unsafe
+11104,restaurant,116.0,8.0,Moderate
+11101,restaurant,374.0,63.0,extremely unsafe
+10452,restaurant,237.0,87.0,extremely unsafe
+11102,restaurant,120.0,14.0,Moderate
+11203,restaurant,211.0,94.0,extremely unsafe
+11106,restaurant,194.0,24.0,Unsafe
+10035,restaurant,180.0,61.0,extremely unsafe
+11213,restaurant,222.0,77.0,extremely unsafe
+11206,restaurant,377.0,91.0,extremely unsafe
+10033,restaurant,178.0,41.0,Unsafe
+10040,park,18.0,28.0,Unsafe
+11229,restaurant,173.0,50.0,extremely unsafe
+11210,restaurant,162.0,57.0,extremely unsafe
+11211,restaurant,483.0,58.0,extremely unsafe
+10029,restaurant,334.0,103.0,extremely unsafe
+10037,restaurant,31.0,25.0,Unsafe
+10039,restaurant,51.0,17.0,Moderate
+10032,restaurant,186.0,50.0,extremely unsafe
+11216,restaurant,284.0,52.0,extremely unsafe
+11222,restaurant,299.0,31.0,Unsafe
+10027,restaurant,240.0,65.0,extremely unsafe
+10030,restaurant,105.0,33.0,Unsafe
+10031,restaurant,192.0,43.0,Unsafe
+11225,restaurant,188.0,59.0,extremely unsafe
+10044,restaurant,25.0,2.0,Safe
+11226,restaurant,305.0,105.0,extremely unsafe
+10028,restaurant,226.0,39.0,Unsafe
+10128,restaurant,230.0,38.0,Unsafe
+10026,restaurant,120.0,35.0,Unsafe
+11205,restaurant,236.0,42.0,Unsafe
+10021,restaurant,278.0,31.0,Unsafe
+10075,tourist_attraction,193.0,12.0,Moderate
+11230,restaurant,224.0,33.0,Unsafe
+11238,restaurant,289.0,44.0,Unsafe
+11249,restaurant,212.0,21.0,Unsafe
+11109,restaurant,14.0,,
+10065,restaurant,299.0,35.0,Unsafe
+11223,restaurant,149.0,44.0,Unsafe
+10025,restaurant,314.0,54.0,extremely unsafe
+11218,restaurant,282.0,25.0,Unsafe
+10022,restaurant,610.0,100.0,extremely unsafe
+10017,restaurant,493.0,25.0,Unsafe
+10024,restaurant,333.0,23.0,Unsafe
+07020,restaurant,81.0,,
+07024,restaurant,140.0,,
+11204,restaurant,210.0,28.0,Unsafe
+11215,restaurant,405.0,33.0,Unsafe
+11217,restaurant,300.0,68.0,extremely unsafe
+10010,restaurant,381.0,42.0,Unsafe
+10016,restaurant,653.0,62.0,extremely unsafe
+10174,restaurant,7.0,,
+10167,restaurant,6.0,1.0,Safe
+10172,restaurant,3.0,,
+10154,restaurant,1.0,,
+10055,restaurant,1.0,,
+10152,restaurant,8.0,,
+10153,market,2.0,,
+10019,restaurant,826.0,85.0,extremely unsafe
+10002,restaurant,828.0,103.0,extremely unsafe
+10009,restaurant,378.0,38.0,Unsafe
+10170,restaurant,20.0,,
+10168,restaurant,12.0,,
+10169,restaurant,22.0,,
+10171,travel_agency,5.0,,
+10111,restaurant,13.0,1.0,Safe
+10020,restaurant,40.0,3.0,Moderate
+10124,restaurant,1.0,,
+10103,restaurant,8.0,,
+10023,restaurant,212.0,31.0,Unsafe
+11201,restaurant,506.0,106.0,extremely unsafe
+10003,restaurant,811.0,77.0,extremely unsafe
+10165,travel_agency,28.0,,
+10173,restaurant,11.0,6.0,Moderate
+10036,restaurant,649.0,76.0,extremely unsafe
+10110,restaurant,13.0,,
+10112,restaurant,14.0,,
+10106,restaurant,1.0,,
+07010,restaurant,93.0,,
+11219,restaurant,271.0,35.0,Unsafe
+10118,travel_agency,35.0,,
+10001,restaurant,884.0,116.0,extremely unsafe
+10018,restaurant,554.0,34.0,Unsafe
+07650,restaurant,110.0,,
+11214,restaurant,244.0,48.0,extremely unsafe
+11231,restaurant,240.0,38.0,Unsafe
+10101,restaurant,1.0,,
+10258,restaurant,1.0,,
+10069,park,9.0,,
+11232,restaurant,168.0,27.0,Unsafe
+10013,restaurant,733.0,58.0,extremely unsafe
+10012,restaurant,537.0,55.0,extremely unsafe
+10011,restaurant,639.0,68.0,extremely unsafe
+10119,restaurant,29.0,6.0,Moderate
+07047,restaurant,181.0,,
+07022,restaurant,80.0,,
+07657,restaurant,53.0,,
+11228,restaurant,101.0,12.0,Moderate
+10004,restaurant,203.0,10.0,Moderate
+10038,restaurant,248.0,17.0,Moderate
+11220,restaurant,478.0,84.0,extremely unsafe
+10007,restaurant,142.0,13.0,Moderate
+10014,restaurant,483.0,51.0,extremely unsafe
+10114,restaurant,1.0,,
+07093,restaurant,270.0,,
+10005,restaurant,93.0,8.0,Moderate
+10278,park,3.0,,
+10279,restaurant,6.0,,
+10271,restaurant,5.0,,
+10006,restaurant,89.0,4.0,Moderate
+07086,restaurant,51.0,,
+10212,restaurant,2.0,,
+10117,restaurant,2.0,,
+10280,park,41.0,2.0,Safe
+10282,restaurant,24.0,6.0,Moderate
+10281,restaurant,24.0,,
+07087,restaurant,360.0,,
+11209,restaurant,309.0,47.0,Unsafe
+07660,restaurant,16.0,,
+07030,restaurant,298.0,,
+11252,restaurant,5.0,,
+07311,restaurant,6.0,,
+07302,restaurant,231.0,,
+07310,restaurant,69.0,,
+07643,restaurant,28.0,,
+07305,park,26.0,,
+07307,restaurant,82.0,,
+07094,restaurant,45.0,,
+07074,restaurant,10.0,,
+07072,park,5.0,,
+07306,park,16.0,,
+07073,restaurant,2.0,,
+10242,market,1.0,,
+11380,market,1.0,,
+10199,tourist_attraction,6.0,,
+07606,park,4.0,,
+07608,travel_agency,2.0,,
+07604,park,3.0,,
+11598,travel_agency,2.0,,
+11022,travel_agency,1.0,,
+11359,travel_agency,2.0,,
+11692,park,10.0,27.0,Unsafe
+10162,travel_agency,2.0,1.0,Safe
+10126,travel_agency,1.0,,
+10164,travel_agency,5.0,,
+10305,park,16.0,19.0,Moderate
+07304,park,11.0,,
+10034,park,20.0,31.0,Unsafe
+11050,park,4.0,,
+10469,park,9.0,48.0,extremely unsafe
+10468,park,16.0,66.0,extremely unsafe
+10463,park,3.0,40.0,Unsafe
+07601,park,6.0,,
+11509,park,3.0,,
+07605,park,7.0,,
+11003,park,4.0,,
+11004,park,2.0,2.0,Safe
+10475,park,4.0,31.0,Unsafe
+11694,park,1.0,11.0,Moderate
+10467,park,11.0,97.0,extremely unsafe
+11235,park,6.0,55.0,extremely unsafe
+07632,park,2.0,,
+07631,park,1.0,,
+07666,park,5.0,,
+11425,park,1.0,,
+10304,park,10.0,41.0,Unsafe
+10301,park,17.0,33.0,Unsafe
+07071,park,1.0,,
+11251,tourist_attraction,3.0,,
+10285,travel_agency,4.0,,
+10115,park,2.0,,
+10079,,,1.0,Safe
+10116,,,1.0,Safe
+10123,,,1.0,Safe
+10226,,,1.0,Safe
+10302,,,13.0,Moderate
+10303,,,24.0,Unsafe
+10306,,,30.0,Unsafe
+10307,,,8.0,Moderate
+10308,,,7.0,Moderate
+10309,,,18.0,Moderate
+10310,,,23.0,Unsafe
+10312,,,19.0,Moderate
+10313,,,1.0,Safe
+10314,,,37.0,Unsafe
+10318,,,2.0,Safe
+10331,,,1.0,Safe
+10382,,,1.0,Safe
+10466,,,79.0,extremely unsafe
+10470,,,18.0,Moderate
+10471,,,13.0,Moderate
+10541,,,1.0,Safe
+10570,,,1.0,Safe
+10583,,,1.0,Safe
+10730,,,1.0,Safe
+10827,,,2.0,Safe
+10925,,,1.0,Safe
+10935,,,1.0,Safe
+10938,,,2.0,Safe
+11040,,,1.0,Safe
+11144,,,1.0,Safe
+11224,,,58.0,extremely unsafe
+11456,,,1.0,Safe
+11625,,,1.0,Safe
+11697,,,3.0,Moderate
+11705,,,1.0,Safe
+12015,,,2.0,Safe
+12417,,,1.0,Safe
+12506,,,1.0,Safe
+12512,,,1.0,Safe
+13007,,,1.0,Safe
+13021,,,1.0,Safe
+13105,,,2.0,Safe
+13208,,,1.0,Safe
+13443,,,2.0,Safe
+13501,,,1.0,Safe
+13627,,,1.0,Safe
+13629,,,1.0,Safe
+13800,,,1.0,Safe
+13815,,,1.0,Safe
+13924,,,1.0,Safe
+14040,,,2.0,Safe
+14228,,,1.0,Safe
+14283,,,1.0,Safe
+14726,,,1.0,Safe
+15021,,,1.0,Safe
+15606,,,1.0,Safe
+15626,,,1.0,Safe
+16122,,,2.0,Safe
+16225,,,1.0,Safe
+16594,,,1.0,Safe
+16614,,,1.0,Safe
+18006,,,2.0,Safe
+18331,,,1.0,Safe
+19006,,,1.0,Safe
+19018,,,1.0,Safe
+19504,,,1.0,Safe
+19708,,,1.0,Safe
+19806,,,1.0,Safe
+20014,,,1.0,Safe
+21514,,,1.0,Safe
+21901,,,1.0,Safe
+22010,,,2.0,Safe
+22306,,,1.0,Safe
+22707,,,1.0,Safe
+23126,,,1.0,Safe
+25404,,,1.0,Safe
+26212,,,1.0,Safe
+41601,,,1.0,Safe
+44508,,,1.0,Safe
+45060,,,4.0,Moderate
+52531,,,2.0,Safe
