@@ -18,6 +18,15 @@
 
 
     <script>
+        const requestData = async () => {
+            const airbnbListing = await d3.csv('./dataset/AB_NYC_2019.csv');
+            console.log(airbnbListing);
+
+            const crimeRate = await d3.csv('./dataset/venue_crime.csv');
+            console.log(crimeRate);
+        }
+
+        requestData();
     </script>
     </p>
 
