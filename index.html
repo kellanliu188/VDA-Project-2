@@ -15,6 +15,8 @@
         Group Project 2 <br>
         Kellan Liu, Bandar Qadan, Sonia Sunil, Jinmo Huang
     </h3>
+    <select id="dataDropdown-neighbourGroup"></select>
+    <select id="dataDropdown-neighbour"></select>
     <svg id="graph" height="800" width="1000" style="margin:20px"></svg>
     <svg id="colorLegend" height="100" width="800" style="background: #fff; margin-top:30px">
     </svg>
@@ -29,58 +31,118 @@
 
         const requestData = async () => {
             const airbnb = await d3.csv('./dataset/AB_NYC_2019.csv');
-            const mapNYC = await d3.json('./dataset/new-york-city-boroughs.geojson')
-            console.log(mapNYC);
+            //const mapNYC = await d3.json('./dataset/new-york-city-boroughs.geojson')
             const zipCode = await d3.json('./dataset/zip_code_040114.geojson');
             console.log(zipCode);
 
 
             let airbnbListing = []
+            let airbnbOriginal = []
             airbnb.forEach((data, i) => {
                 data.latitude = +data.latitude;
                 data.longitude = +data.longitude;
                 data.price = +data.price;
                 if (data.price <= 1000) {
-                    if (data.price !== 0)
-                        airbnbListing.push(data)
+                    if (data.price !== 0) {
+                        airbnbListing.push(data);
+                        airbnbOriginal.push(data);
+                    }
                 }
             });
+            const groups = ["Select Neighbourhood Group", ...new Set(airbnbListing.map(d => d.neighbourhood_group))];
+            const dropdown1 = d3.select('#dataDropdown-neighbourGroup');
 
+            // Append options
+            groups.forEach(d => {
+                dropdown1.append('option')
+                    .text(d)
+                    .attr('value', d);
+            });
+            let neighbours = [...new Set(airbnbListing.map(d => d.neighbourhood))];
 
-            const priceExtent = d3.map(airbnbListing, d => d.price);
-            const colorScale = d3.scaleQuantile()
-                .domain(priceExtent)
-                .range(["#590D22", "#800F2F", "#A4133C", "#C9184A", "#FF4D6D"].reverse());
-
-            let projection = d3.geoMercator().fitSize([mapWidth, mapHeight], mapNYC);
-            let path = d3.geoPath().projection(projection);
-
-
-            const geoMap = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-            geoMap.selectAll('path.zipcode')
-                .data(zipCode.features)
-                .join('path')
-                .attr('class', 'zipcode')
-                .attr('d', path)
-                .attr('fill', '#ccc')
-                .attr('stroke', 'gray');
-
-
-            airbnbListing.forEach(d => {
-                d.Position = projection([d.longitude, d.latitude]);
+            const dropdown2 = d3.select('#dataDropdown-neighbour').style("display", "none");
+            // Append options
+            neighbours.forEach(d => {
+                dropdown2.append('option')
+                    .text(d)
+                    .attr('value', d);
             });
 
-            geoMap.selectAll("circle")
-                .data(airbnbListing)
-                .join("circle")
-                .attr("r", 1)
-                .attr("fill", d => colorScale(d['price']))
-                .attr("opacity", 0.4)
-                .attr("cx", d => d.Position[0])
-                .attr("cy", d => d.Position[1]);
+            dropdown1.on('change', function () {
+                const selectedGroup = d3.select(this).property('value');
+                if (selectedGroup === "Select Neighbourhood Group") {
+                    airbnbListing = airbnbOriginal;
+                }
+                else {
+                    airbnbListing = airbnbOriginal.filter(obj => obj.neighbourhood_group === selectedGroup)
+                    neighbours = ["Select Neighbourhood", ...new Set(airbnbListing.map(d => d.neighbourhood))];
+                }
 
-            drawLegend("#colorLegend", colorScale);
+                dropdown2.selectAll('option').remove();
+
+                neighbours.forEach(d => {
+                    dropdown2.append('option')
+                        .text(d)
+                        .attr('value', d);
+                });
+
+                dropdown2.style("display", "inline-flex");
+                drawEverything();
+
+                // const filteredData = data.filter(d => d.category === selectedCategory);
+                // updateVisualization(filteredData);
+            });
+
+            dropdown2.on('change', function () {
+                const selectedGroup = d3.select(this).property('value');
+                airbnbListing = airbnbOriginal.filter(obj => obj.neighbourhood === selectedGroup)
+                neighbours = [...new Set(airbnbListing.map(d => d.neighbourhood))];
+                drawEverything();
+                // const filteredData = data.filter(d => d.category === selectedCategory);
+                // updateVisualization(filteredData);
+            });
+            drawEverything();
+
+            function drawEverything() {
+                console.log("airbnbListing Filtered", airbnbListing)
+
+
+
+                const priceExtent = d3.map(airbnbListing, d => d.price);
+                const colorScale = d3.scaleQuantile()
+                    .domain(priceExtent)
+                    .range(["#590D22", "#800F2F", "#A4133C", "#C9184A", "#FF4D6D"].reverse());
+
+                let projection = d3.geoMercator().fitSize([mapWidth, mapHeight], zipCode);
+                let path = d3.geoPath().projection(projection);
+
+
+                const geoMap = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+                geoMap.selectAll('path.zipcode')
+                    .data(zipCode.features)
+                    .join('path')
+                    .attr('class', 'zipcode')
+                    .attr('d', path)
+                    .attr('fill', '#ccc')
+                    .attr('stroke', 'gray');
+
+
+                airbnbListing.forEach(d => {
+                    d.Position = projection([d.longitude, d.latitude]);
+                });
+
+                geoMap.selectAll("circle")
+                    .data(airbnbListing)
+                    .join("circle")
+                    .attr("r", 1)
+                    .attr("fill", d => colorScale(d['price']))
+                    .attr("opacity", 0.4)
+                    .attr("cx", d => d.Position[0])
+                    .attr("cy", d => d.Position[1]);
+
+                drawLegend("#colorLegend", colorScale);
+            }
 
             function drawLegend(legendSelector, legendColorScale) {
                 //  Credit Prof. Rz 
