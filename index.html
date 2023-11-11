@@ -15,15 +15,28 @@
         Group Project 2 <br>
         Kellan Liu, Bandar Qadan, Sonia Sunil, Jinmo Huang
     </h3>
-
+    <svg id="graph" height="800" width="1000" style="margin:20px"></svg>
 
     <script>
+        const svg = d3.select("#graph");
+        const width = svg.attr("width");
+        const height = svg.attr("height");
+        const margin = { top: 20, right: 20, bottom: 20, left: 20 };
+        const mapWidth = width - margin.left - margin.right;
+        const mapHeight = height - margin.top - margin.bottom;
         const requestData = async () => {
             const airbnbListing = await d3.csv('./dataset/AB_NYC_2019.csv');
-            console.log(airbnbListing);
 
             const crimeRate = await d3.csv('./dataset/venue_crime.csv');
             console.log(crimeRate);
+
+            airbnbListing.forEach(data => {
+                data.latitude = +data.latitude;
+                data.longitude = +data.longitude;
+                data.price = +data.price;
+
+            })
+            console.log(airbnbListing);
         }
 
         requestData();
