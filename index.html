@@ -145,6 +145,8 @@
             }
 
             function drawLegend(legendSelector, legendColorScale) {
+                const legend = d3.select(legendSelector);
+                legend.selectAll("*").remove();
                 //  Credit Prof. Rz 
                 const offsets = {
                     width: 40,
@@ -154,7 +156,6 @@
                 const stepSize = 4;
                 const minMaxExtendPercent = 0;
 
-                const legend = d3.select(legendSelector);
                 const legendHeight = legend.attr("height");
                 const legendBarWidth = legend.attr("width") - (offsets.width * 2);
                 const legendMinMax = d3.extent(legendColorScale.domain());
@@ -191,7 +192,7 @@
                 }
                 legend.append("g")
                     .attr("class", "legend axis")
-                    .attr("transform", `translate(${offsets.width},${offsets.top + barHeight + 5})`)
+                    .attr("transform", `translate(${offsets.width},${offsets.top + barHeight + 6})`)
                     .call(barAxis);
             }
         }
