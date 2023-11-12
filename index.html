@@ -29,6 +29,49 @@
         const mapWidth = width - margin.left - margin.right;
         const mapHeight = height - margin.top - margin.bottom;
 
+        let geoMap = null;
+        function zoomToNeighborhood(centroid) {
+            projection = d3.geoMercator()
+                .center(centroid)
+                .scale(650000)
+                .translate([mapWidth / 2, mapHeight / 2]);
+
+            path = d3.geoPath().projection(projection);
+
+            geoMap.selectAll("path")
+                .transition()
+                .attr("d", path);
+
+            geoMap.selectAll("circle")
+                .transition()
+                .attr("cx", d => projection([d.longitude, d.latitude])[0])
+                .attr("cy", d => projection([d.longitude, d.latitude])[1])
+                .attr('r', 8)
+                .attr('opacity', 0.5);
+        }
+
+
+        function calculateNeighborhoodCentroids(airbnbData) {
+            let neighborhoodData = {};
+
+            airbnbData.forEach(d => {
+                if (neighborhoodData[d.neighbourhood]) {
+                    neighborhoodData[d.neighbourhood].lat += d.latitude;
+                    neighborhoodData[d.neighbourhood].lon += d.longitude;
+                    neighborhoodData[d.neighbourhood].count += 1;
+                } else {
+                    neighborhoodData[d.neighbourhood] = { lat: d.latitude, lon: d.longitude, count: 1 };
+                }
+            });
+
+            Object.keys(neighborhoodData).forEach(neighborhood => {
+                neighborhoodData[neighborhood].lat /= neighborhoodData[neighborhood].count;
+                neighborhoodData[neighborhood].lon /= neighborhoodData[neighborhood].count;
+            });
+
+            return neighborhoodData;
+        }
+
         const requestData = async () => {
             const airbnb = await d3.csv('./dataset/AB_NYC_2019.csv');
             //const mapNYC = await d3.json('./dataset/new-york-city-boroughs.geojson')
@@ -98,15 +141,21 @@
                 airbnbListing = airbnbOriginal.filter(obj => obj.neighbourhood === selectedGroup)
                 neighbours = [...new Set(airbnbListing.map(d => d.neighbourhood))];
                 drawEverything();
+                console.log('new', airbnbListing);
+                const centroid = neighborhoodCentroids[selectedGroup];
+                if (centroid) {
+                    zoomToNeighborhood([centroid.lon, centroid.lat], geoMap);
+                }
                 // const filteredData = data.filter(d => d.category === selectedCategory);
                 // updateVisualization(filteredData);
             });
             drawEverything();
 
+
+            let neighborhoodCentroids = calculateNeighborhoodCentroids(airbnbListing);
+
             function drawEverything() {
                 console.log("airbnbListing Filtered", airbnbListing)
-
-
 
                 const priceExtent = d3.map(airbnbListing, d => d.price);
                 const colorScale = d3.scaleQuantile()
@@ -116,8 +165,9 @@
                 let projection = d3.geoMercator().fitSize([mapWidth, mapHeight], zipCode);
                 let path = d3.geoPath().projection(projection);
 
-
-                const geoMap = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                if (!geoMap) {
+                    geoMap = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                }
 
                 geoMap.selectAll('path.zipcode')
                     .data(zipCode.features)
@@ -143,17 +193,7 @@
 
                 drawLegend("#colorLegend", colorScale);
 
-
-
             }
-
-
-
-
-
-
-
-
 
 
 
