@@ -17,9 +17,12 @@
     </h3>
     <select id="dataDropdown-neighbourGroup"></select>
     <select id="dataDropdown-neighbour"></select>
-    <svg id="graph" height="800" width="1000" style="margin:20px"></svg>
+    <svg id="graph" height="1000" width="1000" style="margin:20px"></svg>
     <svg id="colorLegend" height="100" width="800" style="background: #fff; margin-top:30px">
     </svg>
+    <div id="tooltip"
+        style="position: absolute; opacity: 0; pointer-events: none; background-color: white; padding: 5px; border-radius: 5px; border: 1px solid black;">
+    </div>
 
     <script>
         const svg = d3.select("#graph");
@@ -30,26 +33,6 @@
         const mapHeight = height - margin.top - margin.bottom;
 
         let geoMap = null;
-        function zoomToNeighborhood(centroid) {
-            projection = d3.geoMercator()
-                .center(centroid)
-                .scale(650000)
-                .translate([mapWidth / 2, mapHeight / 2]);
-
-            path = d3.geoPath().projection(projection);
-
-            geoMap.selectAll("path")
-                .transition()
-                .attr("d", path);
-
-            geoMap.selectAll("circle")
-                .transition()
-                .attr("cx", d => projection([d.longitude, d.latitude])[0])
-                .attr("cy", d => projection([d.longitude, d.latitude])[1])
-                .attr('r', 8)
-                .attr('opacity', 0.5);
-        }
-
 
         function calculateNeighborhoodCentroids(airbnbData) {
             let neighborhoodData = {};
@@ -81,6 +64,7 @@
 
             let airbnbListing = []
             let airbnbOriginal = []
+
             airbnb.forEach((data, i) => {
                 data.latitude = +data.latitude;
                 data.longitude = +data.longitude;
@@ -93,6 +77,7 @@
                 }
             });
             const groups = ["Select Neighbourhood Group", ...new Set(airbnbListing.map(d => d.neighbourhood_group))];
+
             const dropdown1 = d3.select('#dataDropdown-neighbourGroup');
 
             // Append options
@@ -185,14 +170,66 @@
                 geoMap.selectAll("circle")
                     .data(airbnbListing)
                     .join("circle")
-                    .attr("r", 1)
+                    .attr("r", 1.5)
                     .attr("fill", d => colorScale(d['price']))
-                    .attr("opacity", 0.4)
+                    .attr("opacity", 0.2)
                     .attr("cx", d => d.Position[0])
-                    .attr("cy", d => d.Position[1]);
+                    .attr("cy", d => d.Position[1])
+                    .on("mouseover", onMouseOver)
+                    .on("mouseout", onMouseOut);
 
                 drawLegend("#colorLegend", colorScale);
 
+            }
+
+            function zoomToNeighborhood(centroid) {
+                projection = d3.geoMercator()
+                    .center(centroid)
+                    .scale(650000)
+                    .translate([mapWidth / 2, mapHeight / 2]);
+
+                path = d3.geoPath().projection(projection);
+
+                geoMap.selectAll("path")
+                    .transition()
+                    .attr("d", path);
+
+                geoMap.selectAll("circle")
+                    .transition()
+                    .attr("cx", d => projection([d.longitude, d.latitude])[0])
+                    .attr("cy", d => projection([d.longitude, d.latitude])[1])
+                    .attr('r', 6)
+                    .attr('opacity', 0.5);
+            }
+
+            function onMouseOver(event, d) {
+                let tooltipHtml = `Name: ${d.name}<br>` +
+                    `Price: ${d.price}<br>` +
+                    `Review: ${d.number_of_reviews}<br>` +
+                    `Room Type: ${d.room_type}`;
+                d3.select(this)
+                    .transition()
+                    .duration(100)
+                    .attr('r', 10)
+                    .attr('opacity', 1);
+
+                d3.select("#tooltip")
+                    .html(tooltipHtml)
+                    .style("left", (event.pageX + 10) + "px")
+                    .style("top", (event.pageY - 15) + "px")
+                    .style("opacity", 1)
+                //.text(`Price: ${d.price}`);
+            }
+
+            function onMouseOut(event, d) {
+                d3.select(this)
+                    .transition()
+                    .duration(100)
+                    .attr('r', 6)
+                    .attr('opacity', 0.5)
+
+                d3.select("#tooltip")
+                    .style("opacity", 0);
             }
 
 
@@ -229,7 +266,9 @@
                 thresholds = legendColorScale.quantiles()
 
                 const barThresholds = [legendMinMax[0], ...thresholds, legendMinMax[1]];
+
                 barAxis.tickValues(barThresholds);
+
                 for (let i = 0; i < barThresholds.length - 1; i++) {
                     let dataStart = barThresholds[i];
                     let dataEnd = barThresholds[i + 1];
@@ -252,6 +291,7 @@
 
         requestData();
     </script>
+
     </p>
 
 
