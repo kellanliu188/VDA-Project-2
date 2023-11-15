@@ -86,9 +86,7 @@
 
         const requestData = async () => {
             const airbnb = await d3.csv('./dataset/AB_NYC_2019.csv');
-            //const mapNYC = await d3.json('./dataset/new-york-city-boroughs.geojson')
             const zipCode = await d3.json('./dataset/zip_code_040114.geojson');
-            console.log(zipCode);
 
             let airbnbListing = []
             let airbnbOriginal = []
@@ -180,8 +178,6 @@
                 }
             });
 
-            // const filteredData = data.filter(d => d.category === selectedCategory);
-            // updateVisualization(filteredData);
 
             dropdown2.on('change', function () {
                 const selectedGroup = d3.select(this).property('value');
@@ -203,22 +199,11 @@
                 }
 
                 drawEverything();
-                console.log('new', airbnbListing);
                 const centroid = neighborhoodCentroids[selectedGroup];
-                console.log(
-                    "centroid", centroid
-                )
+
                 if (centroid) {
                     zoomToNeighborhood([centroid.lon, centroid.lat], geoMap);
                 }
-                // const filteredData = data.filter(d => d.category === selectedCategory);
-                // updateVisualization(filteredData);
-
-                //info card changes
-                //const averagePrice = calculateAvgPrice(airbnbListing, selectedGroup);
-                //d3.select('#infoCard').style('display', 'block');
-                //d3.select('#infoContent').html(`Selected Neighborhood: ${selectedGroup}
-                //<br>Average Price: $${averagePrice.toFixed(2)}`);
 
                 d3.select('#detailsContent').style('display', 'none');
 
@@ -242,7 +227,6 @@
             let neighborhoodCentroids = calculateNeighborhoodCentroids(airbnbListing);
 
             function drawEverything() {
-                console.log("airbnbListing Filtered", airbnbListing)
 
                 const priceExtent = d3.map(airbnbListing, d => d.price);
                 const colorScale = d3.scaleQuantile()
@@ -269,7 +253,6 @@
                     d.Position = projection([d.longitude, d.latitude]);
                 });
 
-                //mouse in&out, and click to see detail info
                 geoMap.selectAll("circle")
                     .data(airbnbListing)
                     .join("circle")
@@ -295,7 +278,6 @@
                             `Room Type: ${d.room_type}<br>` +
                             `Price: ${d.price}<br>`;
                         d3.select("#detailsContent").html('<h2>Details</h2>' + newContent).style('display', 'block');
-                        //here idk how to outclick to return to the former page, and the mouse out fuction resizes the circle in the zoom-in vire...
                     });
 
                 drawLegend("#colorLegend", colorScale);
