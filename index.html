@@ -18,8 +18,8 @@
     <!-- alignment -->
     <div id="container">
         <div id="map">
-        <svg id="graph" height="800" width="1000"></svg>
-        <svg id="colorLegend" height="100" width="800" style="background: #fff; margin-top:30px"></svg>
+            <svg id="graph" height="800" width="1000"></svg>
+            <svg id="colorLegend" height="100" width="800" style="background: #fff;"></svg>
         </div>
 
         <div id="infoCard">
@@ -30,7 +30,7 @@
                 <p id="infoContent">Select a neighborhood to see details.</p>
                 <div id="detailsContent"></div>
             </div>
-    </div>
+        </div>
 
     </div>
     <script>
@@ -124,39 +124,42 @@
 
             // Caculate the average price of the selected area
             function calculateAverage(airbnbData, selectedGroup) {
-            let sumPrice = 0;
-            let count = 0;
+                let sumPrice = 0;
+                let count = 0;
 
-            airbnbData.forEach(d => {
-                if (d.neighbourhood_group === selectedGroup) {
-                    sumPrice += d.price;
-                    count++;
-                }
-            });
-            return {
-                averagePrice: sumPrice / count
-            };
-        }
+                airbnbData.forEach(d => {
+                    if (d.neighbourhood_group === selectedGroup) {
+                        sumPrice += d.price;
+                        count++;
+                    }
+                });
+                return {
+                    averagePrice: sumPrice / count
+                };
+            }
+
+            let nGroup = "Select Neighbourhood Group";
 
             dropdown1.on('change', function () {
                 const selectedGroup = d3.select(this).property('value');
+                nGroup = selectedGroup;
                 if (selectedGroup === "Select Neighbourhood Group") {
                     airbnbListing = airbnbOriginal;
+                    dropdown2.style("display", "none");
                 }
                 else {
                     airbnbListing = airbnbOriginal.filter(obj => obj.neighbourhood_group === selectedGroup)
                     neighbours = ["Select Neighbourhood", ...new Set(airbnbListing.map(d => d.neighbourhood))];
+                    dropdown2.selectAll('option').remove();
+
+                    neighbours.forEach(d => {
+                        dropdown2.append('option')
+                            .text(d)
+                            .attr('value', d);
+                    });
+
+                    dropdown2.style("display", "inline-flex");
                 }
-
-                dropdown2.selectAll('option').remove();
-
-                neighbours.forEach(d => {
-                    dropdown2.append('option')
-                        .text(d)
-                        .attr('value', d);
-                });
-
-                dropdown2.style("display", "inline-flex");
                 drawEverything();
 
                 const selectedNeighborhood = d3.select(this).property('value');
@@ -164,45 +167,66 @@
                 d3.select('#infoContent').text(`Information about ${selectedNeighborhood}`);
 
                 //info card changes
-                if (selectedGroup !== "Select Neighbourhood Group") {
+                //if (selectedGroup !== "Select Neighbourhood Group") {
                 const averages = calculateAverage(airbnbOriginal, selectedGroup);
                 d3.select('#infoCard').style('display', 'block');
-                d3.select('#infoContent').html(`Selected Area: ${selectedGroup}
+                if (selectedGroup !== "Select Neighbourhood Group") {
+                    d3.select('#infoContent').html(`Selected Area: ${selectedGroup}
                 <br>Average Price: $${averages.averagePrice.toFixed(2)}`);
-            } else {
-                d3.select('#infoCard').style('display', 'none');
-            }
-        });
+                } else {
+                    // d3.select('#infoCard').style('display', 'none');
+                    d3.select('#infoContent').html(`Select a neighborhood to see details.`);
+                    d3.select('#detailsContent').style('display', 'none');
+                }
+            });
 
-                // const filteredData = data.filter(d => d.category === selectedCategory);
-                // updateVisualization(filteredData);
+            // const filteredData = data.filter(d => d.category === selectedCategory);
+            // updateVisualization(filteredData);
 
             dropdown2.on('change', function () {
                 const selectedGroup = d3.select(this).property('value');
-                airbnbListing = airbnbOriginal.filter(obj => obj.neighbourhood === selectedGroup)
-                neighbours = [...new Set(airbnbListing.map(d => d.neighbourhood))];
+                if (selectedGroup === "Select Neighbourhood") {
+                    airbnbListing = airbnbOriginal.filter(obj => obj.neighbourhood_group === nGroup);
+                    const averages = calculateAverage(airbnbOriginal, nGroup);
+                    d3.select('#infoCard').style('display', 'block');
+                    d3.select('#infoContent').html(`Selected Area: ${nGroup}
+                <br>Average Price: $${averages.averagePrice.toFixed(2)}`);
+
+                }
+                else {
+                    airbnbListing = airbnbOriginal.filter(obj => obj.neighbourhood === selectedGroup);
+                    neighbours = [...new Set(airbnbListing.map(d => d.neighbourhood))];
+                    const averagePrice = calculateAvgPrice(airbnbListing, selectedGroup);
+                    d3.select('#infoCard').style('display', 'block');
+                    d3.select('#infoContent').html(`Selected Neighborhood: ${selectedGroup}
+                <br>Average Price: $${averagePrice.toFixed(2)}`);
+                }
+
                 drawEverything();
                 console.log('new', airbnbListing);
                 const centroid = neighborhoodCentroids[selectedGroup];
+                console.log(
+                    "centroid", centroid
+                )
                 if (centroid) {
                     zoomToNeighborhood([centroid.lon, centroid.lat], geoMap);
                 }
                 // const filteredData = data.filter(d => d.category === selectedCategory);
                 // updateVisualization(filteredData);
-                const selectedNeighbourhood = d3.select(this).property('value');
-                airbnbListing = airbnbOriginal.filter(obj => obj.neighbourhood === selectedNeighbourhood);
-                
+
                 //info card changes
-                const averagePrice = calculateAvgPrice(airbnbListing, selectedNeighbourhood);
-                d3.select('#infoCard').style('display', 'block');
-                d3.select('#infoContent').html(`Selected Neighborhood: ${selectedNeighbourhood}
-                <br>Average Price: $${averagePrice.toFixed(2)}`);
+                //const averagePrice = calculateAvgPrice(airbnbListing, selectedGroup);
+                //d3.select('#infoCard').style('display', 'block');
+                //d3.select('#infoContent').html(`Selected Neighborhood: ${selectedGroup}
+                //<br>Average Price: $${averagePrice.toFixed(2)}`);
+
+                d3.select('#detailsContent').style('display', 'none');
 
                 drawEverything();
-                        });
-                        drawEverything();
+            });
+            drawEverything();
 
-                        function calculateAvgPrice(airbnbData, selectedNeighbourhood) {
+            function calculateAvgPrice(airbnbData, selectedNeighbourhood) {
                 let sumPrice = 0;
                 let count = 0;
 
@@ -249,29 +273,31 @@
                 geoMap.selectAll("circle")
                     .data(airbnbListing)
                     .join("circle")
-                    .attr("r", 1)
+                    .attr("r", 2)
                     .attr("fill", d => colorScale(d['price']))
                     .attr("opacity", 0.4)
                     .attr("cx", d => d.Position[0])
                     .attr("cy", d => d.Position[1])
-                    .on("mouseover", function(event, d) {
+                    .on("mouseover", function (event, d) {
                         d3.select(this).transition()
                             .duration(100)
-                            .attr("r", 10);
+                            .attr('stroke-width', 3)
+                            .attr('stroke', 'black');
                     })
-                    .on("mouseout", function() {
+                    .on("mouseout", function () {
                         d3.select(this).transition()
                             .duration(100)
-                            .attr("r", 1);     
+                            .attr('stroke', 'transparent');
                     })
-                    .on("click", function(event, d) {
-                    const newContent = `Name: ${d.name}<br>` +
-                       `Host: ${d.host_name}<br>` +
-                       `Room Type: ${d.room_type}<br>` +
-                       `Price: ${d.price}<br>`;
-                       d3.select("#detailsContent").html('<h2>Details</h2>' + newContent);
-                       //here idk how to outclick to return to the former page, and the mouse out fuction resizes the circle in the zoom-in vire...
-                });
+                    .on("click", function (event, d) {
+                        const newContent = `Name: ${d.name}<br>` +
+                            `Host: ${d.host_name}<br>` +
+                            `Room Type: ${d.room_type}<br>` +
+                            `Price: ${d.price}<br>`;
+                        d3.select("#detailsContent").html('<h2>Details</h2>' + newContent).style('display', 'block');
+                        //here idk how to outclick to return to the former page, and the mouse out fuction resizes the circle in the zoom-in vire...
+                    });
+
                 drawLegend("#colorLegend", colorScale);
 
             }
@@ -279,10 +305,18 @@
             function drawLegend(legendSelector, legendColorScale) {
                 const legend = d3.select(legendSelector);
                 legend.selectAll("*").remove();
+                legend.append("text")
+                    .text("Price Range")
+                    .attr("x", 0)
+                    .attr("y", 15)
+                    .attr("text-anchor", "start")
+                    .style("font-size", "15px")
+                    .style("fill", "black")
+                    .style("font-family", "sans-serif");
                 //  Credit Prof. Rz 
                 const offsets = {
                     width: 40,
-                    top: 2,
+                    top: 30,
                     bottom: 24
                 };
                 const stepSize = 4;
@@ -291,7 +325,6 @@
                 const legendHeight = legend.attr("height");
                 const legendBarWidth = legend.attr("width") - (offsets.width * 2);
                 const legendMinMax = d3.extent(legendColorScale.domain());
-                console.log("legendColorScale", legendColorScale.domain())
                 const minMaxExtension = (legendMinMax[1] - legendMinMax[0]) * minMaxExtendPercent;
                 const barHeight = legendHeight - offsets.top - offsets.bottom;
 
@@ -326,7 +359,7 @@
                     .attr("class", "legend axis")
                     .attr("transform", `translate(${offsets.width},${offsets.top + barHeight + 6})`)
                     .call(barAxis);
-            
+
             }
         }
         requestData();
@@ -335,78 +368,82 @@
 </body>
 
 <style>
-    #graph{
-        margin:20px;
-        border: 1px solid #FF385C; 
-            padding: 15px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            border-radius: 8px; 
+    #graph {
+        margin: 20px;
+        border: 1px solid #FF385C;
+        padding: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        border-radius: 8px;
     }
 
-    #container{
+    #container {
         display: flex;
         align-items: center;
-        flex-direction: row; 
+        flex-direction: row;
     }
-    #map{
+
+    #map {
         display: flex;
         align-items: center;
-        flex-direction: column;  
+        flex-direction: column;
     }
-        #dropdownContainer {
-        margin: 20px; 
-        display: flex; 
-        flex-direction: column; 
+
+    #dropdownContainer {
+        margin: 20px;
+        display: flex;
+        flex-direction: column;
         align-items: flex-start;
     }
-        #infoCard {
-            display: block;
-            position: relative;
-            margin: 40px;
-            left: 20px;
-            top: 20px;
-            width: 300px;
-            height: auto;
-            background-color: white;
-            border: 1px solid #FF385C; 
-            padding: 15px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            border-radius: 8px; 
-            font-family: Arial, sans-serif; 
-            flex: 1;
-            align-items: flex-start;
-        }
 
-        #infoCard h2 {
-            color: #FF385C; 
-            font-family: Arial, sans-serif; 
-        }
+    #infoCard {
+        display: block;
+        position: relative;
+        margin: 40px;
+        left: 20px;
+        top: 20px;
+        width: 300px;
+        height: auto;
+        background-color: white;
+        border: 1px solid #FF385C;
+        padding: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        border-radius: 8px;
+        font-family: Arial, sans-serif;
+        flex: 1;
+        align-items: flex-start;
+    }
 
-        #infoCard p {
-            color: #575757; 
-            line-height: 1.5;
-        }
+    #infoCard h2 {
+        color: #FF385C;
+        font-family: Arial, sans-serif;
+    }
 
-        #detailsContent{
-            color: #575757; 
-        }
+    #infoCard p {
+        color: #575757;
+        line-height: 1.5;
+    }
 
-        select {
-            width: 100%;
-            padding: 10px; 
-            margin: 5px 0; 
-            border: 1px solid #FF385C; 
-            border-radius: 8px; 
-            font-family: Arial, sans-serif; 
-            color: #333; 
-            background-color: #fff; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
-            cursor: pointer; 
-        }
+    #detailsContent {
+        color: #575757;
+    }
 
-        select:focus {
-            outline: none; 
-            border-color: #FF5A5F; 
-        }
+    select {
+        width: 100%;
+        padding: 10px;
+        margin: 5px 0;
+        border: 1px solid #FF385C;
+        border-radius: 8px;
+        font-family: Arial, sans-serif;
+        color: #333;
+        background-color: #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+    }
+
+    select:focus {
+        outline: none;
+        border-color: #FF5A5F;
+    }
 </style>
+
 </html>
