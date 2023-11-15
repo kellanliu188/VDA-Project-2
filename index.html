@@ -272,6 +272,9 @@
                        d3.select("#detailsContent").html('<h2>Details</h2>' + newContent);
                        //here idk how to outclick to return to the former page, and the mouse out fuction resizes the circle in the zoom-in vire...
                 });
+                drawLegend("#colorLegend", colorScale);
+
+            }
 
             function drawLegend(legendSelector, legendColorScale) {
                 const legend = d3.select(legendSelector);
@@ -325,7 +328,7 @@
                     .call(barAxis);
             
             }
-        }}
+        }
         requestData();
     </script>
     </p>
