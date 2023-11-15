@@ -15,12 +15,28 @@
         Group Project 2 <br>
         Kellan Liu, Bandar Qadan, Sonia Sunil, Jinmo Huang
     </h3>
-    <select id="dataDropdown-neighbourGroup"></select>
-    <select id="dataDropdown-neighbour"></select>
-    <svg id="graph" height="800" width="1000" style="margin:20px"></svg>
-    <svg id="colorLegend" height="100" width="800" style="background: #fff; margin-top:30px">
-    </svg>
+    <!-- alignment -->
+    <div id="container">
+        <div id="map">
+            <svg id="graph" height="800" width="1000"></svg>
+            <svg id="colorLegend" height="100" width="800" style="background: #fff;"></svg>
+        </div>
+<div>
+    <span id="hint" style="width: 300px;margin-left: 80px;display: flex;">
+        Click on the circles to view details on price, room type and host!</span>
+    <div id="infoCard">
+        <div id="dropdownContainer">
+            <select id="dataDropdown-neighbourGroup"></select>
+            <select id="dataDropdown-neighbour"></select>
+            <h2>Housing Info</h2>
+            <p id="infoContent">Select a neighborhood to see details.</p>
+            <div id="detailsContent"></div>
+        </div>
+    </div>
+</div>
+        
 
+    </div>
     <script>
         const svg = d3.select("#graph");
         const width = svg.attr("width");
@@ -29,12 +45,52 @@
         const mapWidth = width - margin.left - margin.right;
         const mapHeight = height - margin.top - margin.bottom;
 
+        let geoMap = null;
+        function zoomToNeighborhood(centroid) {
+            projection = d3.geoMercator()
+                .center(centroid)
+                .scale(650000)
+                .translate([mapWidth / 2, mapHeight / 2]);
+
+            path = d3.geoPath().projection(projection);
+
+            geoMap.selectAll("path")
+                .transition()
+                .attr("d", path);
+
+            geoMap.selectAll("circle")
+                .transition()
+                .attr("cx", d => projection([d.longitude, d.latitude])[0])
+                .attr("cy", d => projection([d.longitude, d.latitude])[1])
+                .attr('r', 8)
+                .attr('opacity', 0.5);
+        }
+
+
+        function calculateNeighborhoodCentroids(airbnbData) {
+            let neighborhoodData = {};
+
+            airbnbData.forEach(d => {
+                if (neighborhoodData[d.neighbourhood]) {
+                    neighborhoodData[d.neighbourhood].lat += d.latitude;
+                    neighborhoodData[d.neighbourhood].lon += d.longitude;
+                    neighborhoodData[d.neighbourhood].count += 1;
+                } else {
+                    neighborhoodData[d.neighbourhood] = { lat: d.latitude, lon: d.longitude, count: 1 };
+                }
+            });
+
+            Object.keys(neighborhoodData).forEach(neighborhood => {
+                neighborhoodData[neighborhood].lat /= neighborhoodData[neighborhood].count;
+                neighborhoodData[neighborhood].lon /= neighborhoodData[neighborhood].count;
+            });
+
+            return neighborhoodData;
+        }
+
         const requestData = async () => {
             const airbnb = await d3.csv('./dataset/AB_NYC_2019.csv');
-            //const mapNYC = await d3.json('./dataset/new-york-city-boroughs.geojson')
             const zipCode = await d3.json('./dataset/zip_code_040114.geojson');
-            console.log(zipCode);
-
 
             let airbnbListing = []
             let airbnbOriginal = []
@@ -68,45 +124,113 @@
                     .attr('value', d);
             });
 
+            // Caculate the average price of the selected area
+            function calculateAverage(airbnbData, selectedGroup) {
+                let sumPrice = 0;
+                let count = 0;
+
+                airbnbData.forEach(d => {
+                    if (d.neighbourhood_group === selectedGroup) {
+                        sumPrice += d.price;
+                        count++;
+                    }
+                });
+                return {
+                    averagePrice: sumPrice / count
+                };
+            }
+
+            let nGroup = "Select Neighbourhood Group";
+
             dropdown1.on('change', function () {
                 const selectedGroup = d3.select(this).property('value');
+                nGroup = selectedGroup;
                 if (selectedGroup === "Select Neighbourhood Group") {
                     airbnbListing = airbnbOriginal;
+                    dropdown2.style("display", "none");
                 }
                 else {
                     airbnbListing = airbnbOriginal.filter(obj => obj.neighbourhood_group === selectedGroup)
                     neighbours = ["Select Neighbourhood", ...new Set(airbnbListing.map(d => d.neighbourhood))];
+                    dropdown2.selectAll('option').remove();
+
+                    neighbours.forEach(d => {
+                        dropdown2.append('option')
+                            .text(d)
+                            .attr('value', d);
+                    });
+
+                    dropdown2.style("display", "inline-flex");
                 }
-
-                dropdown2.selectAll('option').remove();
-
-                neighbours.forEach(d => {
-                    dropdown2.append('option')
-                        .text(d)
-                        .attr('value', d);
-                });
-
-                dropdown2.style("display", "inline-flex");
                 drawEverything();
 
-                // const filteredData = data.filter(d => d.category === selectedCategory);
-                // updateVisualization(filteredData);
+                const selectedNeighborhood = d3.select(this).property('value');
+                d3.select('#infoCard').style('display', 'block');
+                d3.select('#infoContent').text(`Information about ${selectedNeighborhood}`);
+
+                //info card changes
+                //if (selectedGroup !== "Select Neighbourhood Group") {
+                const averages = calculateAverage(airbnbOriginal, selectedGroup);
+                d3.select('#infoCard').style('display', 'block');
+                if (selectedGroup !== "Select Neighbourhood Group") {
+                    d3.select('#infoContent').html(`Selected Area: ${selectedGroup}
+                <br>Average Price: $${averages.averagePrice.toFixed(2)}`);
+                } else {
+                    // d3.select('#infoCard').style('display', 'none');
+                    d3.select('#infoContent').html(`Select a neighborhood to see details.`);
+                    d3.select('#detailsContent').style('display', 'none');
+                }
             });
+
 
             dropdown2.on('change', function () {
                 const selectedGroup = d3.select(this).property('value');
-                airbnbListing = airbnbOriginal.filter(obj => obj.neighbourhood === selectedGroup)
-                neighbours = [...new Set(airbnbListing.map(d => d.neighbourhood))];
+                if (selectedGroup === "Select Neighbourhood") {
+                    airbnbListing = airbnbOriginal.filter(obj => obj.neighbourhood_group === nGroup);
+                    const averages = calculateAverage(airbnbOriginal, nGroup);
+                    d3.select('#infoCard').style('display', 'block');
+                    d3.select('#infoContent').html(`Selected Area: ${nGroup}
+                <br>Average Price: $${averages.averagePrice.toFixed(2)}`);
+
+                }
+                else {
+                    airbnbListing = airbnbOriginal.filter(obj => obj.neighbourhood === selectedGroup);
+                    neighbours = [...new Set(airbnbListing.map(d => d.neighbourhood))];
+                    const averagePrice = calculateAvgPrice(airbnbListing, selectedGroup);
+                    d3.select('#infoCard').style('display', 'block');
+                    d3.select('#infoContent').html(`Selected Neighborhood: ${selectedGroup}
+                <br>Average Price: $${averagePrice.toFixed(2)}`);
+                }
+
                 drawEverything();
-                // const filteredData = data.filter(d => d.category === selectedCategory);
-                // updateVisualization(filteredData);
+                const centroid = neighborhoodCentroids[selectedGroup];
+
+                if (centroid) {
+                    zoomToNeighborhood([centroid.lon, centroid.lat], geoMap);
+                }
+
+                d3.select('#detailsContent').style('display', 'none');
+
+                drawEverything();
             });
             drawEverything();
 
+            function calculateAvgPrice(airbnbData, selectedNeighbourhood) {
+                let sumPrice = 0;
+                let count = 0;
+
+                airbnbData.forEach(d => {
+                    if (d.neighbourhood === selectedNeighbourhood) {
+                        sumPrice += d.price;
+                        count++;
+                    }
+                });
+                return count > 0 ? sumPrice / count : 0;
+            }
+
+            let neighborhoodCentroids = calculateNeighborhoodCentroids(airbnbListing);
+
             function drawEverything() {
-                console.log("airbnbListing Filtered", airbnbListing)
-
-
 
                 const priceExtent = d3.map(airbnbListing, d => d.price);
                 const colorScale = d3.scaleQuantile()
@@ -116,8 +240,9 @@
                 let projection = d3.geoMercator().fitSize([mapWidth, mapHeight], zipCode);
                 let path = d3.geoPath().projection(projection);
 
-
-                const geoMap = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                if (!geoMap) {
+                    geoMap = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                }
 
                 geoMap.selectAll('path.zipcode')
                     .data(zipCode.features)
@@ -135,30 +260,57 @@
                 geoMap.selectAll("circle")
                     .data(airbnbListing)
                     .join("circle")
-                    .attr("r", 1)
+                    .attr("r", 2)
                     .attr("fill", d => colorScale(d['price']))
                     .attr("opacity", 0.4)
                     .attr("cx", d => d.Position[0])
-                    .attr("cy", d => d.Position[1]);
+                    .attr("cy", d => d.Position[1])
+                    .on("mouseover", function (event, d) {
+                        d3.select(this).transition()
+                            .duration(100)
+                            .attr('stroke-width', 3)
+                            .attr('stroke', 'black');
+                    })
+                    .on("mouseout", function () {
+                        d3.select(this).transition()
+                            .duration(100)
+                            .attr('stroke', 'transparent');
+                    })
+                    .on("click", function (event, d) {
+                        const newContent = `Name: ${d.name}<br>` +
+                            `Host: ${d.host_name}<br>` +
+                            `Room Type: ${d.room_type}<br>` +
+                            `Price: ${d.price}<br>`;
+                        d3.select("#detailsContent").html('<h2>Details</h2>' + newContent).style('display', 'block');
+                    });
 
                 drawLegend("#colorLegend", colorScale);
+
             }
 
             function drawLegend(legendSelector, legendColorScale) {
+                const legend = d3.select(legendSelector);
+                legend.selectAll("*").remove();
+                legend.append("text")
+                    .text("Price Range")
+                    .attr("x", 0)
+                    .attr("y", 15)
+                    .attr("text-anchor", "start")
+                    .style("font-size", "15px")
+                    .style("fill", "black")
+                    .style("font-family", "sans-serif");
                 //  Credit Prof. Rz 
                 const offsets = {
                     width: 40,
-                    top: 2,
+                    top: 30,
                     bottom: 24
                 };
                 const stepSize = 4;
                 const minMaxExtendPercent = 0;
 
-                const legend = d3.select(legendSelector);
                 const legendHeight = legend.attr("height");
                 const legendBarWidth = legend.attr("width") - (offsets.width * 2);
                 const legendMinMax = d3.extent(legendColorScale.domain());
-                console.log("legendColorScale", legendColorScale.domain())
                 const minMaxExtension = (legendMinMax[1] - legendMinMax[0]) * minMaxExtendPercent;
                 const barHeight = legendHeight - offsets.top - offsets.bottom;
 
@@ -191,16 +343,96 @@
                 }
                 legend.append("g")
                     .attr("class", "legend axis")
-                    .attr("transform", `translate(${offsets.width},${offsets.top + barHeight + 5})`)
+                    .attr("transform", `translate(${offsets.width},${offsets.top + barHeight + 6})`)
                     .call(barAxis);
+
             }
         }
-
         requestData();
     </script>
     </p>
-
-
 </body>
+
+<style>
+    #graph {
+        margin: 20px;
+        border: 1px solid #FF385C;
+        padding: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        border-radius: 8px;
+    }
+
+    #container {
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+    }
+
+    #map {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+    }
+
+    #dropdownContainer {
+        margin: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    #infoCard {
+        display: block;
+        position: relative;
+        margin: 40px;
+        left: 20px;
+        width: 300px;
+        height: auto;
+        background-color: white;
+        border: 1px solid #FF385C;
+        padding: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        border-radius: 8px;
+        font-family: Arial, sans-serif;
+        flex: 1;
+        align-items: flex-start;
+    }
+    #hint {
+        font-family: Arial, sans-serif;
+        color: #575757;
+    }
+
+    #infoCard h2 {
+        color: #FF385C;
+        font-family: Arial, sans-serif;
+    }
+
+    #infoCard p {
+        color: #575757;
+        line-height: 1.5;
+    }
+
+    #detailsContent {
+        color: #575757;
+    }
+
+    select {
+        width: 100%;
+        padding: 10px;
+        margin: 5px 0;
+        border: 1px solid #FF385C;
+        border-radius: 8px;
+        font-family: Arial, sans-serif;
+        color: #333;
+        background-color: #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+    }
+
+    select:focus {
+        outline: none;
+        border-color: #FF5A5F;
+    }
+</style>
 
 </html>
