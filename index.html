@@ -21,16 +21,20 @@
             <svg id="graph" height="800" width="1000"></svg>
             <svg id="colorLegend" height="100" width="800" style="background: #fff;"></svg>
         </div>
-
-        <div id="infoCard">
-            <div id="dropdownContainer">
-                <select id="dataDropdown-neighbourGroup"></select>
-                <select id="dataDropdown-neighbour"></select>
-                <h2>Housing Info</h2>
-                <p id="infoContent">Select a neighborhood to see details.</p>
-                <div id="detailsContent"></div>
-            </div>
+<div>
+    <span id="hint" style="width: 300px;margin-left: 80px;display: flex;">
+        Click on the circles to view details on price, room type and host!</span>
+    <div id="infoCard">
+        <div id="dropdownContainer">
+            <select id="dataDropdown-neighbourGroup"></select>
+            <select id="dataDropdown-neighbour"></select>
+            <h2>Housing Info</h2>
+            <p id="infoContent">Select a neighborhood to see details.</p>
+            <div id="detailsContent"></div>
         </div>
+    </div>
+</div>
+        
 
     </div>
     <script>
@@ -382,7 +386,6 @@
         position: relative;
         margin: 40px;
         left: 20px;
-        top: 20px;
         width: 300px;
         height: auto;
         background-color: white;
@@ -393,6 +396,10 @@
         font-family: Arial, sans-serif;
         flex: 1;
         align-items: flex-start;
+    }
+    #hint {
+        font-family: Arial, sans-serif;
+        color: #575757;
     }
 
     #infoCard h2 {
